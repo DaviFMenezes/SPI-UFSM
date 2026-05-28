@@ -60,7 +60,7 @@ public class UsuarioServlet extends HttpServlet {
         Object usuarioObj = session.getAttribute("usuario");
 
         if (usuarioObj == null) {
-            resp.sendRedirect("login.jsp");
+            resp.sendRedirect("index.jsp");
             return;
         }
 
