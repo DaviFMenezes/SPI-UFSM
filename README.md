@@ -1,8 +1,6 @@
 Criar Banco de Dados - "instituto_columbia"
 
 ```
--- Criar tabelas para o banco de dados "instituto_columbia"
-
 CREATE TABLE IF NOT EXISTS public.usuarios (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
