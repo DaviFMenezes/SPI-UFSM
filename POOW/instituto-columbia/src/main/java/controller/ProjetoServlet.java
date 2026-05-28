@@ -17,6 +17,17 @@ public class ProjetoServlet extends HttpServlet {
 
     private ProjetoService service = new ProjetoService();
 
+    private boolean podeAlterarProjeto(Usuario usuario, Projeto projeto) {
+
+        boolean ehDono =
+                projeto.getId_usuario() == usuario.getId();
+
+        boolean ehAdmin =
+                "ADMIN".equals(usuario.getPermissao());
+
+        return ehDono || ehAdmin;
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
@@ -24,15 +35,29 @@ public class ProjetoServlet extends HttpServlet {
             resp.sendRedirect("index.jsp");
             return;
         }
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuario");
         String acao = req.getParameter("acao");
         if ("editar".equals(acao)) {
             int id = Integer.parseInt(req.getParameter("id"));
             Projeto p = service.buscarPorId(id);
+            if (!podeAlterarProjeto(usuarioLogado, p)) {
+
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+
+                return;
+            }
             req.setAttribute("projeto", p);
         }
 
         if ("excluir".equals(acao)) {
             int id = Integer.parseInt(req.getParameter("id"));
+            Projeto p = service.buscarPorId(id);
+            if (!podeAlterarProjeto(usuarioLogado, p)) {
+
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+
+                return;
+            }
             service.excluir(id);
             resp.sendRedirect("projeto?msg=excluido");
             return;
@@ -77,7 +102,17 @@ public class ProjetoServlet extends HttpServlet {
         Projeto p = new Projeto(titulo, descricao, categoria, imagemUrl, dataInicio, dataTermino, idUsuario);
 
         if (idParam != null && !idParam.isEmpty()) {
-            p.setId(Integer.parseInt(idParam));
+            int idProjeto = Integer.parseInt(idParam);
+
+            Projeto projetoOriginal = service.buscarPorId(idProjeto);
+
+            if (!podeAlterarProjeto(usuarioLogado, projetoOriginal)) {
+
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+
+                return;
+            }
+            p.setId(idProjeto);
             service.atualizar(p);
             resp.sendRedirect("projeto?msg=editado");
         } else {
