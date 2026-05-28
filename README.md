@@ -35,6 +35,6 @@ CREATE TABLE IF NOT EXISTS public.mensagens (
 );
 
 INSERT INTO public.usuarios (nome, email, senha, permissao)
-VALUES ('Teste', 'teste@columbia.com', '1234', 'ADMIN');
+VALUES ('Admin', 'adm@columbia.com', '1234', 'ADMIN');
 
 ```
